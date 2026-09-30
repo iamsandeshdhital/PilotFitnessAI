@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Run Assessment - {{ pilot.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-clipboard-check"></i> Run Fitness Assessment</h1>
+    <p class="subtitle">Pilot: {{ pilot.full_name }} ({{ pilot.pilot_id }})</p>
+</div>
+
+<div class="assessment-info">
+    <div class="info-card">
+        <h3>Assessment Scope</h3>
+        <p>This comprehensive assessment will evaluate the pilot across <strong>15 modules</strong>:</p>
+        <ul class="module-list">
+            <li><i class="fas fa-heartbeat"></i> Medical Fitness</li>
+            <li><i class="fas fa-brain"></i> Psychological Evaluation</li>
+            <li><i class="fas fa-share-alt"></i> Social Media Analysis</li>
+            <li><i class="fas fa-globe"></i> Socio-Political-Economic</li>
+            <li><i class="fas fa-comments"></i> Staff Feedback</li>
+            <li><i class="fas fa-plane-departure"></i> Flight History</li>
+            <li><i class="fas fa-flask"></i> Substance Abuse Screening</li>
+            <li><i class="fas fa-dollar-sign"></i> Financial Stability</li>
+            <li><i class="fas fa-shield-alt"></i> Background Check</li>
+            <li><i class="fas fa-bed"></i> Fatigue & Lifestyle</li>
+            <li><i class="fas fa-graduation-cap"></i> Training & Certification</li>
+            <li><i class="fas fa-suitcase"></i> Travel History</li>
+            <li><i class="fas fa-chart-line"></i> Behavior Pattern Change</li>
+            <li><i class="fas fa-laptop"></i> Digital Footprint (Phone, Email, Browsing, Messages, Devices, Location)</li>
+            <li><i class="fas fa-exclamation-circle"></i> Radicalization Detection</li>
+        </ul>
+    </div>
+    
+    <div class="info-card">
+        <h3>Data Summary</h3>
+        <dl>
+            <dt>Medical Records</dt><dd>{{ pilot.medical_records|length }}</dd>
+            <dt>Flight Logs</dt><dd>{{ pilot.flight_logs|length }}</dd>
+            <dt>Staff Feedback</dt><dd>{{ pilot.staff_feedback|length }}</dd>
+            <dt>Social Media Posts</dt><dd>{{ pilot.social_media_posts|length }}</dd>
+            <dt>Training Records</dt><dd>{{ pilot.training_records|length }}</dd>
+            <dt>Substance Tests</dt><dd>{{ pilot.substance_tests|length }}</dd>
+            <dt>Financial Records</dt><dd>{{ pilot.financial_records|length }}</dd>
+            <dt>Psychological Evals</dt><dd>{{ pilot.psychological_evals|length }}</dd>
+            <dt>Travel Records</dt><dd>{{ pilot.travel_records|length }}</dd>
+            <dt>Phone Records</dt><dd>{{ pilot.phone_records|length }}</dd>
+            <dt>Email Records</dt><dd>{{ pilot.email_records|length }}</dd>
+            <dt>Browsing History</dt><dd>{{ pilot.browsing_history|length }}</dd>
+            <dt>Message Records</dt><dd>{{ pilot.message_records|length }}</dd>
+            <dt>Device Records</dt><dd>{{ pilot.device_records|length }}</dd>
+            <dt>Location Data</dt><dd>{{ pilot.location_data|length }}</dd>
+        </dl>
+    </div>
+</div>
+
+<form method="POST" class="form">
+    <div class="form-group">
+        <label>Assessed By</label>
+        <input type="text" name="assessed_by" value="AI System" placeholder="Enter assessor name">
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-play"></i> Run Comprehensive Assessment</button>
+        <a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

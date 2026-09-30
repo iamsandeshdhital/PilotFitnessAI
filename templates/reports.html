@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Pilot Fitness Assessment AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-chart-bar"></i> Reports & Analytics</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+            <h3>{{ total_pilots }}</h3>
+            <p>Total Pilots</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+        <div class="stat-info">
+            <h3>{{ total_assessments }}</h3>
+            <p>Total Assessments</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-sections">
+    <div class="section">
+        <h2><i class="fas fa-chart-pie"></i> Fitness Status Distribution</h2>
+        <div class="chart-container">
+            <div class="bar-chart">
+                {% for status, count in fitness_distribution.items() %}
+                <div class="bar-item">
+                    <span class="bar-label">{{ status }}</span>
+                    <div class="bar" style="height: {{ (count / total_assessments * 100) if total_assessments > 0 else 0 }}%"></div>
+                    <span class="bar-value">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-exclamation-triangle"></i> Risk Level Distribution</h2>
+        <div class="chart-container">
+            <div class="bar-chart">
+                {% for level, count in risk_distribution.items() %}
+                <div class="bar-item">
+                    <span class="bar-label">{{ level }}</span>
+                    <div class="bar" style="height: {{ (count / total_assessments * 100) if total_assessments > 0 else 0 }}%"></div>
+                    <span class="bar-value">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-star"></i> Average Module Scores</h2>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Average Score</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module, score in avg_scores.items() %}
+                    <tr>
+                        <td>{{ module }}</td>
+                        <td>
+                            <div class="score-bar">
+                                <div class="score-fill {{ 'success' if score >= 80 else 'warning' if score >= 60 else 'danger' }}" style="width: {{ score }}%"></div>
+                                <span>{{ "%.1f"|format(score) }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if score >= 80 %}
+                            <span class="badge badge-success">Good</span>
+                            {% elif score >= 60 %}
+                            <span class="badge badge-warning">Fair</span>
+                            {% else %}
+                            <span class="badge badge-danger">Poor</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-chart-line"></i> Score Distribution</h2>
+        <div class="chart-container">
+            <div class="bar-chart">
+                {% for range, count in score_ranges.items() %}
+                <div class="bar-item">
+                    <span class="bar-label">{{ range }}</span>
+                    <div class="bar" style="height: {{ (count / total_assessments * 100) if total_assessments > 0 else 0 }}%"></div>
+                    <span class="bar-value">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

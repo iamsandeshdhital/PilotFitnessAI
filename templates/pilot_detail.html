@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block title %}{{ pilot.full_name }} - Pilot Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-user"></i> {{ pilot.full_name }}</h1>
+        <p class="subtitle">{{ pilot.pilot_id }} | {{ pilot.airline or 'Independent' }} | {{ pilot.license_type }}</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{ url_for('run_assessment', pilot_id=pilot.id) }}" class="btn btn-primary"><i class="fas fa-clipboard-check"></i> Run Assessment</a>
+    </div>
+</div>
+
+<div class="pilot-info-grid">
+    <div class="info-card">
+        <h3><i class="fas fa-id-card"></i> Basic Info</h3>
+        <dl>
+            <dt>Date of Birth</dt><dd>{{ pilot.date_of_birth }}</dd>
+            <dt>Nationality</dt><dd>{{ pilot.nationality or '-' }}</dd>
+            <dt>License Number</dt><dd>{{ pilot.license_number or '-' }}</dd>
+            <dt>License Expiry</dt><dd>{{ pilot.license_expiry_date or '-' }}</dd>
+            <dt>Medical Class</dt><dd>{{ pilot.medical_certificate_class or '-' }}</dd>
+            <dt>Medical Expiry</dt><dd>{{ pilot.medical_expiry or '-' }}</dd>
+            <dt>Total Flight Hours</dt><dd>{{ "%.0f"|format(pilot.total_flight_hours) }}</dd>
+            <dt>Experience</dt><dd>{{ "%.1f"|format(pilot.years_experience) }} years</dd>
+            <dt>Base Airport</dt><dd>{{ pilot.base_airport or '-' }}</dd>
+        </dl>
+    </div>
+    
+    <div class="info-card">
+        <h3><i class="fas fa-plane"></i> Aircraft Ratings</h3>
+        <div class="tags">
+            {% for ac in pilot.aircraft_type_ratings %}
+            <span class="tag">{{ ac }}</span>
+            {% endfor %}
+        </div>
+        
+        <h3 style="margin-top: 20px;"><i class="fas fa-share-alt"></i> Social Media</h3>
+        <dl>
+            {% for platform, handle in pilot.social_media_handles.items() %}
+            <dt>{{ platform|title }}</dt><dd>{{ handle }}</dd>
+            {% endfor %}
+        </dl>
+    </div>
+</div>
+
+<!-- Assessments -->
+<div class="section">
+    <h2><i class="fas fa-clipboard-check"></i> Assessments</h2>
+    {% if assessments %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Risk</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in assessments %}
+                <tr>
+                    <td>{{ a.assessment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ "%.1f"|format(a.overall_score) }}</td>
+                    <td><span class="badge badge-{{ a.fitness_status|lower }}">{{ a.fitness_status }}</span></td>
+                    <td><span class="badge badge-{{ a.risk_level|lower }}">{{ a.risk_level }}</span></td>
+                    <td><a href="{{ url_for('assessment_report', assessment_id=a.id) }}" class="btn btn-sm">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No assessments yet.</p>
+    {% endif %}
+</div>
+
+<!-- Medical Records -->
+<div class="section">
+    <h2><i class="fas fa-heartbeat"></i> Medical Records</h2>
+    {% if medical_records %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Examiner</th><th>Vision</th><th>BP</th><th>HR</th><th>BMI</th><th>Fitness</th></tr>
+            </thead>
+            <tbody>
+                {% for m in medical_records %}
+                <tr>
+                    <td>{{ m.exam_date }}</td>
+                    <td>{{ m.examiner_name }}</td>
+                    <td>{{ m.vision_left_eye }}/{{ m.vision_right_eye }}</td>
+                    <td>{{ m.blood_pressure_systolic }}/{{ m.blood_pressure_diastolic }}</td>
+                    <td>{{ m.heart_rate }}</td>
+                    <td>{{ "%.1f"|format(m.bmi) if m.bmi else '-' }}</td>
+                    <td><span class="badge badge-{{ m.medical_fitness|lower }}">{{ m.medical_fitness }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No medical records.</p>
+    {% endif %}
+</div>
+
+<!-- Flight Logs -->
+<div class="section">
+    <h2><i class="fas fa-plane-departure"></i> Flight Logs</h2>
+    {% if flight_logs %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Aircraft</th><th>Route</th><th>Duration</th><th>Type</th><th>Incidents</th></tr>
+            </thead>
+            <tbody>
+                {% for f in flight_logs %}
+                <tr>
+                    <td>{{ f.flight_date }}</td>
+                    <td>{{ f.aircraft_type }}</td>
+                    <td>{{ f.departure_airport }} → {{ f.arrival_airport }}</td>
+                    <td>{{ f.flight_duration_minutes }} min</td>
+                    <td>{{ f.flight_type }}</td>
+                    <td>{{ f.incidents or 'None' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No flight logs.</p>
+    {% endif %}
+</div>
+
+<!-- Staff Feedback -->
+<div class="section">
+    <h2><i class="fas fa-comments"></i> Staff Feedback</h2>
+    {% if staff_feedback %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Provider</th><th>Role</th><th>Rating</th><th>Fly Again</th><th>Flags</th></tr>
+            </thead>
+            <tbody>
+                {% for fb in staff_feedback %}
+                <tr>
+                    <td>{{ fb.feedback_date }}</td>
+                    <td>{{ fb.feedback_provider_name }}</td>
+                    <td>{{ fb.feedback_provider_role }}</td>
+                    <td>{{ fb.overall_rating }}/5</td>
+                    <td>{{ fb.would_fly_with_again }}</td>
+                    <td>
+                        {% if fb.signs_of_stress %}<span class="badge badge-warning">Stress</span>{% endif %}
+                        {% if fb.signs_of_fatigue %}<span class="badge badge-warning">Fatigue</span>{% endif %}
+                        {% if fb.signs_of_substance_use %}<span class="badge badge-danger">Substance</span>{% endif %}
+                        {% if fb.signs_of_aggression %}<span class="badge badge-danger">Aggression</span>{% endif %}
+                        {% if fb.signs_of_depression %}<span class="badge badge-danger">Depression</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No staff feedback.</p>
+    {% endif %}
+</div>
+
+<!-- Social Media Posts -->
+<div class="section">
+    <h2><i class="fas fa-share-alt"></i> Social Media Posts</h2>
+    {% if social_posts %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Platform</th><th>Content</th><th>Sentiment</th><th>Flagged</th></tr>
+            </thead>
+            <tbody>
+                {% for p in social_posts %}
+                <tr>
+                    <td>{{ p.post_date.strftime('%Y-%m-%d') if p.post_date else '-' }}</td>
+                    <td>{{ p.platform }}</td>
+                    <td>{{ p.post_content[:100] }}{{ '...' if p.post_content|length > 100 }}</td>
+                    <td><span class="badge badge-{{ p.sentiment_label|lower }}">{{ p.sentiment_label }}</span></td>
+                    <td>{% if p.flagged %}<span class="badge badge-danger">Yes</span>{% else %}No{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No social media posts.</p>
+    {% endif %}
+</div>
+
+<!-- Training Records -->
+<div class="section">
+    <h2><i class="fas fa-graduation-cap"></i> Training Records</h2>
+    {% if training_records %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Type</th><th>Date</th><th>Expiry</th><th>Result</th><th>Score</th></tr>
+            </thead>
+            <tbody>
+                {% for t in training_records %}
+                <tr>
+                    <td>{{ t.training_type }}</td>
+                    <td>{{ t.training_date }}</td>
+                    <td>{{ t.expiry_date }}</td>
+                    <td><span class="badge badge-{{ t.result|lower }}">{{ t.result }}</span></td>
+                    <td>{{ t.score or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No training records.</p>
+    {% endif %}
+</div>
+
+<!-- Travel Records -->
+<div class="section">
+    <h2><i class="fas fa-suitcase"></i> Travel History</h2>
+    {% if travel_records %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Destination</th><th>Purpose</th><th>Departure</th><th>Return</th><th>Type</th></tr>
+            </thead>
+            <tbody>
+                {% for t in travel_records %}
+                <tr>
+                    <td>{{ t.destination }}</td>
+                    <td>{{ t.purpose }}</td>
+                    <td>{{ t.departure_date }}</td>
+                    <td>{{ t.return_date }}</td>
+                    <td>{{ t.trip_type }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No travel records.</p>
+    {% endif %}
+</div>
+
+<!-- Digital Footprint -->
+<div class="section">
+    <h2><i class="fas fa-laptop"></i> Digital Footprint</h2>
+    <div class="digital-grid">
+        <div class="info-card">
+            <h4>Phone Records ({{ phone_records|length }})</h4>
+            {% if phone_records %}
+            <ul class="simple-list">
+                {% for p in phone_records[:5] %}
+                <li>{{ p.call_date.strftime('%Y-%m-%d') if p.call_date else '-' }} - {{ p.contact_name }} ({{ p.duration_seconds }}s)</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+        <div class="info-card">
+            <h4>Email Records ({{ email_records|length }})</h4>
+            {% if email_records %}
+            <ul class="simple-list">
+                {% for e in email_records[:5] %}
+                <li>{{ e.email_date.strftime('%Y-%m-%d') if e.email_date else '-' }} - {{ e.subject[:50] }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+        <div class="info-card">
+            <h4>Browsing History ({{ browsing_history|length }})</h4>
+            {% if browsing_history %}
+            <ul class="simple-list">
+                {% for b in browsing_history[:5] %}
+                <li>{{ b.access_time.strftime('%Y-%m-%d') if b.access_time else '-' }} - {{ b.title[:50] }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+        <div class="info-card">
+            <h4>Messages ({{ message_records|length }})</h4>
+            {% if message_records %}
+            <ul class="simple-list">
+                {% for m in message_records[:5] %}
+                <li>{{ m.message_time.strftime('%Y-%m-%d') if m.message_time else '-' }} - {{ m.sender }}: {{ m.content[:30] }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+        <div class="info-card">
+            <h4>Devices ({{ device_records|length }})</h4>
+            {% if device_records %}
+            <ul class="simple-list">
+                {% for d in device_records %}
+                <li>{{ d.device_type }} - {{ d.os_version }} {% if not d.is_authorized %}<span class="badge badge-danger">Unauthorized</span>{% endif %}</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+        <div class="info-card">
+            <h4>Location Data ({{ location_data|length }})</h4>
+            {% if location_data %}
+            <ul class="simple-list">
+                {% for l in location_data[:5] %}
+                <li>{{ l.timestamp.strftime('%Y-%m-%d') if l.timestamp else '-' }} - {{ l.location }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}<p class="empty-state">No records.</p>{% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Substance Tests -->
+<div class="section">
+    <h2><i class="fas fa-flask"></i> Substance Tests</h2>
+    {% if substance_tests %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Type</th><th>Method</th><th>Alcohol</th><th>Drugs</th><th>Result</th></tr>
+            </thead>
+            <tbody>
+                {% for s in substance_tests %}
+                <tr>
+                    <td>{{ s.test_date }}</td>
+                    <td>{{ s.test_type }}</td>
+                    <td>{{ s.test_method }}</td>
+                    <td>{{ s.alcohol_result }}</td>
+                    <td>{{ s.overall_result }}</td>
+                    <td><span class="badge badge-{{ 'success' if s.overall_result == 'NEGATIVE' else 'danger' }}">{{ s.overall_result }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No substance tests.</p>
+    {% endif %}
+</div>
+
+<!-- Financial Records -->
+<div class="section">
+    <h2><i class="fas fa-dollar-sign"></i> Financial Records</h2>
+    {% if financial_records %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Income</th><th>Debt</th><th>Credit Score</th><th>Bankruptcy</th><th>Gambling</th></tr>
+            </thead>
+            <tbody>
+                {% for f in financial_records %}
+                <tr>
+                    <td>{{ f.record_date }}</td>
+                    <td>${{ "%.0f"|format(f.annual_income) if f.annual_income else '-' }}</td>
+                    <td>${{ "%.0f"|format(f.total_debt) if f.total_debt else '-' }}</td>
+                    <td>{{ f.credit_score or '-' }}</td>
+                    <td>{{ 'Yes' if f.bankruptcy_history else 'No' }}</td>
+                    <td>{{ 'Yes' if f.gambling_concerns else 'No' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No financial records.</p>
+    {% endif %}
+</div>
+
+<!-- Psychological Evals -->
+<div class="section">
+    <h2><i class="fas fa-brain"></i> Psychological Evaluations</h2>
+    {% if psych_evals %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Evaluator</th><th>MMPI-2</th><th>Big5 (C/E/A/N)</th><th>Anxiety</th><th>Depression</th><th>Fitness</th></tr>
+            </thead>
+            <tbody>
+                {% for p in psych_evals %}
+                <tr>
+                    <td>{{ p.eval_date }}</td>
+                    <td>{{ p.evaluator_name }}</td>
+                    <td>{{ p.mmpi2_validity }}</td>
+                    <td>{{ p.big5_conscientiousness|round|int if p.big5_conscientiousness else '-' }}/{{ p.big5_extraversion|round|int if p.big5_extraversion else '-' }}/{{ p.big5_agreeableness|round|int if p.big5_agreeableness else '-' }}/{{ p.big5_neuroticism|round|int if p.big5_neuroticism else '-' }}</td>
+                    <td>{{ p.anxiety_level }}</td>
+                    <td>{{ p.depression_level }}</td>
+                    <td><span class="badge badge-{{ p.psychological_fitness|lower }}">{{ p.psychological_fitness }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No psychological evaluations.</p>
+    {% endif %}
+</div>
+
+<!-- Incident Reports -->
+<div class="section">
+    <h2><i class="fas fa-exclamation-triangle"></i> Incident Reports</h2>
+    {% if incidents %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Date</th><th>Type</th><th>Severity</th><th>At Fault</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {% for i in incidents %}
+                <tr>
+                    <td>{{ i.incident_date }}</td>
+                    <td>{{ i.incident_type }}</td>
+                    <td><span class="badge badge-{{ i.severity|lower }}">{{ i.severity }}</span></td>
+                    <td>{{ 'Yes' if i.pilot_at_fault else 'No' }}</td>
+                    <td>{{ i.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No incidents reported.</p>
+    {% endif %}
+</div>
+{% endblock %}

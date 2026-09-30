@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Pilot Fitness Assessment AI{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <h3>{{ pilot_count }}</h3>
+                <p>Total Pilots</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div class="stat-info">
+                <h3>{{ assessment_count }}</h3>
+                <p>Assessments</p>
+            </div>
+        </div>
+        <div class="stat-card stat-success">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3>{{ fit_count }}</h3>
+                <p>Fit for Duty</p>
+            </div>
+        </div>
+        <div class="stat-card stat-warning">
+            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-info">
+                <h3>{{ conditional_count }}</h3>
+                <p>Conditional</p>
+            </div>
+        </div>
+        <div class="stat-card stat-danger">
+            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-info">
+                <h3>{{ unfit_count }}</h3>
+                <p>Unfit</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-sections">
+        <div class="section">
+            <h2><i class="fas fa-plane"></i> Assessment Modules</h2>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <i class="fas fa-heartbeat"></i>
+                    <h4>Medical</h4>
+                    <p>Vision, hearing, cardiovascular, neurological health</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-brain"></i>
+                    <h4>Psychological</h4>
+                    <p>MMPI-2, Big Five, emotional stability, cognitive function</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-share-alt"></i>
+                    <h4>Social Media</h4>
+                    <p>Sentiment analysis, risk indicators, behavior patterns</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-globe"></i>
+                    <h4>Socio-Political-Economic</h4>
+                    <p>Political extremism, economic stress, social risk factors</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-comments"></i>
+                    <h4>Staff Feedback</h4>
+                    <p>Crew feedback, behavioral flags, peer assessments</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-plane-departure"></i>
+                    <h4>Flight History</h4>
+                    <p>Flight logs, incidents, currency, performance trends</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-flask"></i>
+                    <h4>Substance Abuse</h4>
+                    <p>Drug/alcohol tests, screening results, patterns</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h4>Financial Stability</h4>
+                    <p>Credit score, debt, bankruptcy, gambling concerns</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Background Check</h4>
+                    <p>Incident reports, criminal history, security clearance</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-bed"></i>
+                    <h4>Fatigue & Lifestyle</h4>
+                    <p>Sleep disorders, lifestyle factors, fitness indicators</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>Training & Certification</h4>
+                    <p>License validity, training currency, type ratings</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-suitcase"></i>
+                    <h4>Travel History</h4>
+                    <p>Destinations, high-risk areas, unusual patterns</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Behavior Pattern</h4>
+                    <p>Change detection, trend analysis, sudden shifts</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-laptop"></i>
+                    <h4>Digital Footprint</h4>
+                    <p>Phone, email, browsing, messages, devices, location</p>
+                </div>
+                <div class="module-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h4>Radicalization</h4>
+                    <p>Extremist content, ideology indicators, risk assessment</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-history"></i> Recent Assessments</h2>
+            {% if recent_assessments %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pilot</th>
+                            <th>Date</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Risk</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in recent_assessments %}
+                        <tr>
+                            <td>{{ assessment.pilot.full_name }}</td>
+                            <td>{{ assessment.assessment_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: {{ assessment.overall_score }}%"></div>
+                                    <span>{{ "%.1f"|format(assessment.overall_score) }}</span>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-{{ assessment.fitness_status|lower }}">{{ assessment.fitness_status }}</span></td>
+                            <td><span class="badge badge-{{ assessment.risk_level|lower }}">{{ assessment.risk_level }}</span></td>
+                            <td><a href="{{ url_for('assessment_report', assessment_id=assessment.id) }}" class="btn btn-sm">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="empty-state">No assessments yet. <a href="{{ url_for('list_pilots') }}">Run your first assessment</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

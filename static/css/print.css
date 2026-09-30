@@ -1,0 +1,98 @@
+/* Print Styles for Pilot Fitness Assessment AI */
+
+@media print {
+    .navbar,
+    .footer,
+    .btn,
+    .nav-actions,
+    .close-btn {
+        display: none !important;
+    }
+    
+    .main-content {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .section,
+    .info-card,
+    .overall-score-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+    
+    .score-bar {
+        border: 1px solid #ddd;
+    }
+    
+    .score-fill {
+        background: #333 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .badge {
+        border: 1px solid #ddd;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .page-header {
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+    }
+    
+    h1, h2, h3, h4 {
+        color: black;
+    }
+    
+    .data-table {
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        border: 1px solid #ddd;
+        padding: 6px;
+    }
+    
+    .overall-score-card {
+        flex-direction: row;
+        text-align: left;
+    }
+    
+    .score-circle {
+        border: 4px solid #333;
+    }
+    
+    .score-value {
+        color: black;
+    }
+    
+    .module-detail {
+        page-break-inside: avoid;
+    }
+    
+    .alert {
+        border: 1px solid #ddd;
+        background: white !important;
+    }
+    
+    .alert-danger {
+        border-left: 4px solid #333;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #666;
+    }
+    
+    .alert-info {
+        border-left: 4px solid #999;
+    }
+}

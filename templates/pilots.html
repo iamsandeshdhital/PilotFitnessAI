@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Pilots - Pilot Fitness Assessment AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-users"></i> Pilots</h1>
+    <a href="{{ url_for('add_pilot') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Pilot</a>
+</div>
+
+<div class="table-responsive">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Pilot ID</th>
+                <th>Name</th>
+                <th>License</th>
+                <th>Airline</th>
+                <th>Flight Hours</th>
+                <th>Experience</th>
+                <th>Medical Exp.</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pilot in pilots %}
+            <tr>
+                <td>{{ pilot.pilot_id }}</td>
+                <td>
+                    <a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}">
+                        <strong>{{ pilot.full_name }}</strong>
+                    </a>
+                </td>
+                <td>{{ pilot.license_type }}</td>
+                <td>{{ pilot.airline or '-' }}</td>
+                <td>{{ "%.0f"|format(pilot.total_flight_hours) }}</td>
+                <td>{{ "%.1f"|format(pilot.years_experience) }} years</td>
+                <td>
+                    {% if pilot.medical_expiry %}
+                        {% set days = (pilot.medical_expiry - now).days if now else 0 %}
+                        <span class="{{ 'text-danger' if days < 30 else 'text-warning' if days < 90 else '' }}">
+                            {{ pilot.medical_expiry.strftime('%Y-%m-%d') }}
+                        </span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}" class="btn btn-sm"><i class="fas fa-eye"></i></a>
+                    <a href="{{ url_for('run_assessment', pilot_id=pilot.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-clipboard-check"></i> Assess</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Pilot Fitness Assessment AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-search"></i> Search Pilots</h1>
+</div>
+
+<div class="section">
+    <form method="GET" action="{{ url_for('search_pilots') }}" class="form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Search by Name</label>
+                <input type="text" name="name" placeholder="Enter pilot name..." value="{{ request.args.get('name', '') }}">
+            </div>
+            <div class="form-group">
+                <label>Search by Pilot ID</label>
+                <input type="text" name="pilot_id" placeholder="Enter pilot ID..." value="{{ request.args.get('pilot_id', '') }}">
+            </div>
+            <div class="form-group">
+                <label>Airline</label>
+                <input type="text" name="airline" placeholder="Enter airline..." value="{{ request.args.get('airline', '') }}">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            <a href="{{ url_for('list_pilots') }}" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+</div>
+
+{% if pilots is defined %}
+<div class="section">
+    <h2>Search Results ({{ pilots|length }} found)</h2>
+    {% if pilots %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Pilot ID</th>
+                    <th>Name</th>
+                    <th>License</th>
+                    <th>Airline</th>
+                    <th>Flight Hours</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pilot in pilots %}
+                <tr>
+                    <td>{{ pilot.pilot_id }}</td>
+                    <td><a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}"><strong>{{ pilot.full_name }}</strong></a></td>
+                    <td>{{ pilot.license_type }}</td>
+                    <td>{{ pilot.airline or '-' }}</td>
+                    <td>{{ "%.0f"|format(pilot.total_flight_hours) }}</td>
+                    <td>
+                        <a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}" class="btn btn-sm"><i class="fas fa-eye"></i></a>
+                        <a href="{{ url_for('run_assessment', pilot_id=pilot.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-clipboard-check"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No pilots found matching your search criteria.</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

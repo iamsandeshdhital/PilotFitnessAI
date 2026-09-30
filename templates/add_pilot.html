@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Add Pilot - Pilot Fitness Assessment AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-user-plus"></i> Add New Pilot</h1>
+</div>
+
+<form method="POST" class="form">
+    <div class="form-grid">
+        <div class="form-section">
+            <h3>Basic Information</h3>
+            <div class="form-group">
+                <label>Pilot ID *</label>
+                <input type="text" name="pilot_id" required placeholder="PLT-XXX">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name *</label>
+                    <input type="text" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" name="last_name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Date of Birth *</label>
+                <input type="date" name="date_of_birth" required>
+            </div>
+            <div class="form-group">
+                <label>Nationality</label>
+                <input type="text" name="nationality">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" name="phone">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>License Information</h3>
+            <div class="form-group">
+                <label>License Number</label>
+                <input type="text" name="license_number">
+            </div>
+            <div class="form-group">
+                <label>License Type</label>
+                <select name="license_type">
+                    <option value="">Select...</option>
+                    <option value="ATPL">ATPL</option>
+                    <option value="CPL">CPL</option>
+                    <option value="PPL">PPL</option>
+                    <option value="MPL">MPL</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Issue Date</label>
+                    <input type="date" name="license_issue_date">
+                </div>
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="date" name="license_expiry_date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Medical Certificate Class</label>
+                <select name="medical_certificate_class">
+                    <option value="">Select...</option>
+                    <option value="Class 1">Class 1</option>
+                    <option value="Class 2">Class 2</option>
+                    <option value="Class 3">Class 3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Medical Expiry</label>
+                <input type="date" name="medical_expiry">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Employment</h3>
+            <div class="form-group">
+                <label>Airline</label>
+                <input type="text" name="airline">
+            </div>
+            <div class="form-group">
+                <label>Base Airport</label>
+                <input type="text" name="base_airport" placeholder="e.g., DFW">
+            </div>
+            <div class="form-group">
+                <label>Total Flight Hours</label>
+                <input type="number" name="total_flight_hours" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label>Years of Experience</label>
+                <input type="number" name="years_experience" step="0.1" min="0">
+            </div>
+            <div class="form-group">
+                <label>Aircraft Type Ratings</label>
+                <input type="text" name="aircraft_type_ratings" placeholder="B737, A320, B777">
+                <small>Comma-separated</small>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Social Media</h3>
+            <div class="form-group">
+                <label>Twitter Handle</label>
+                <input type="text" name="twitter_handle" placeholder="@username">
+            </div>
+            <div class="form-group">
+                <label>Facebook</label>
+                <input type="text" name="facebook_handle">
+            </div>
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="text" name="instagram_handle" placeholder="@username">
+            </div>
+            <div class="form-group">
+                <label>LinkedIn</label>
+                <input type="text" name="linkedin_handle">
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Pilot</button>
+        <a href="{{ url_for('list_pilots') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

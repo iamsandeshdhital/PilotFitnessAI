@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Report - {{ pilot.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-file-alt"></i> Assessment Report</h1>
+        <p class="subtitle">{{ pilot.full_name }} | {{ assessment.assessment_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{ url_for('pilot_detail', pilot_id=pilot.id) }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Pilot</a>
+    </div>
+</div>
+
+<!-- Overall Score -->
+<div class="overall-score-card">
+    <div class="score-circle {{ assessment.fitness_status|lower }}">
+        <span class="score-value">{{ "%.1f"|format(assessment.overall_score) }}</span>
+        <span class="score-label">/ 100</span>
+    </div>
+    <div class="score-details">
+        <h2>Fitness Status: <span class="badge badge-{{ assessment.fitness_status|lower }}">{{ assessment.fitness_status }}</span></h2>
+        <h3>Risk Level: <span class="badge badge-{{ assessment.risk_level|lower }}">{{ assessment.risk_level }}</span></h3>
+        <p>Assessed by: {{ assessment.assessed_by }}</p>
+    </div>
+</div>
+
+<!-- Module Scores -->
+<div class="section">
+    <h2><i class="fas fa-chart-bar"></i> Module Scores</h2>
+    <div class="scores-grid">
+        {% for module, result in module_results.items() %}
+        <div class="score-card">
+            <h4>{{ module|replace('_', ' ')|title }}</h4>
+            <div class="score-bar large">
+                <div class="score-fill {{ 'success' if result.score >= 80 else 'warning' if result.score >= 60 else 'danger' }}" style="width: {{ result.score }}%"></div>
+                <span>{{ "%.1f"|format(result.score) }}</span>
+            </div>
+            <span class="badge badge-{{ result.status|lower }}">{{ result.status }}</span>
+            {% if result.risk_factors %}
+            <ul class="risk-list">
+                {% for rf in result.risk_factors %}
+                <li><i class="fas fa-exclamation-triangle"></i> {{ rf }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Red Flags -->
+{% if red_flags %}
+<div class="section">
+    <h2><i class="fas fa-flag"></i> Red Flags</h2>
+    <div class="alert alert-danger">
+        <ul>
+            {% for flag in red_flags %}
+            <li>{{ flag }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recommendations -->
+{% if recommendations %}
+<div class="section">
+    <h2><i class="fas fa-clipboard-list"></i> Recommendations</h2>
+    <div class="alert alert-info">
+        <ul>
+            {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- Conditions -->
+{% if conditions %}
+<div class="section">
+    <h2><i class="fas fa-list-check"></i> Conditions for Fitness</h2>
+    <div class="alert alert-warning">
+        <ul>
+            {% for cond in conditions %}
+            <li>{{ cond }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- Detailed Module Results -->
+<div class="section">
+    <h2><i class="fas fa-search"></i> Detailed Findings</h2>
+    {% for module, result in module_results.items() %}
+    <div class="module-detail">
+        <h3>{{ module|replace('_', ' ')|title }}</h3>
+        {% if result.findings %}
+        <ul>
+            {% for finding in result.findings %}
+            <li>{{ finding }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">No findings.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
